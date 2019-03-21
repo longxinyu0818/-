@@ -1,0 +1,497 @@
+/****************Prime*************/
+#include <cstdio>
+#include <cstring>
+#define N 1005
+#define INF 0x3f3f3f3f
+ 
+int map[N][N], dis[N], vis[N];
+int n, m;
+int cnt = 0, sum = 0;
+ 
+void init()
+{
+	for (int i = 1; i <= n; i++)
+	{
+		for (int j = 1; j <= n; j++)
+		{
+			if (i == j)	map[i][j] = 0;
+			else map[i][j] = INF;
+		}
+	}
+	return;
+}
+void creatgraph()
+{
+	int i, j, w;
+	for (int k = 0; k < m; k++)
+	{
+		scanf("%d%d%d", &i, &j, &w);
+		if (map[i][j] > w)//重边取最小
+			map[i][j] = map[j][i] = w;//无向图
+	}
+	return;
+}
+ 
+int prime(int start)
+{
+	for (int i = 1; i <= n; i++)//dis存储节点1到其他各个节点的距离，达不到用INF表示
+		dis[i] = map[start][i];
+	cnt++;
+	memset(vis, 0, sizeof(vis));
+	vis[start] = 1;//记下第一个节点
+	
+	while (cnt < n)
+	{
+		int min = INF, j = -1;
+		for (int i = 1; i <= n; i++)//找当前生成树加一个节点所需的最小权值min，并记录该节点
+		{
+			if (!vis[i] && dis[i] < min)
+			{
+				min = dis[i];
+				j = i;
+			}
+		}
+		if (min == INF) return -1;//图不连通
+		vis[j] = 1; cnt++; sum += min;//标记新节点，累加最小权值
+		/*下边更新dis数组,根据新节点到各个未知节点的距离来更新*/
+		for (int k = 1; k <= n; k++)
+		{
+			if (!vis[k] && dis[k] > map[j][k])
+				dis[k] = map[j][k];
+		}
+	}
+	return sum;
+}
+ 
+int main()
+{
+	while (scanf("%d%d", &n, &m) != EOF)//输入顶点数和边数
+	{
+		int ans = 0;
+		cnt = 0; sum = 0;//cnt表示生成树的顶点个数，sum存储路径和
+		init();//初始化图
+		creatgraph();//建图
+		int start;
+		//scanf("%d", &start);
+		ans = prime(1);//核心算法
+		if (ans != -1)
+			printf("%d\n", ans);
+		else
+			printf("图不连通,最小生成树不存在\n");
+	}
+	return 0;
+}
+
+
+/**********Dijkstra***************/
+#include <iostream>
+#include <cstdio>
+#include <cstring>
+ 
+using namespace std;
+const int MAX=1e9;
+int n,m;
+int a[1005][1005];//图
+int lowcost[1005];
+int vis[1005];
+void dj(int s)
+{
+    for(int i=1;i<=n;i++)//3.初始化每个点到指定点的最短路径
+    {
+        lowcost[i]=a[i][s];
+    }
+    memset(vis,0,sizeof vis);
+    vis[s]=1;
+    for(int i=1;i<n;i++)//4.依次选出最短路径的点，总共n-1个，循环n的话也没关系
+    {
+        int MIN,min_index;
+        MIN=MAX;
+        min_index=i;
+        for(int j=1;j<=n;j++)//4.1找出最短路径的点以及下标
+        {
+            if(MIN>lowcost[j] && !vis[j])
+            {
+                MIN=lowcost[j];
+                min_index=j;
+            }
+        }
+        vis[min_index]=1;
+        for(int k=1;k<=n;k++)//4.2更新一下每个点到指定点的最短距离
+            if(lowcost[k]>lowcost[min_index]+a[min_index][k] && !vis[k])
+                lowcost[k]=lowcost[min_index]+a[min_index][k];
+    }
+}
+ 
+int main()
+{
+    while(scanf("%d%d",&n,&m)==2)
+    {
+        for(int i=1;i<=n;i++)//0.初始化矩阵
+            for(int j=1;j<=n;j++)
+                {a[i][j]=i==j?0:MAX;}
+        int x,y,val;
+        for(int i=0; i<m; i++)//1.构造邻接矩阵
+        {
+            scanf("%d%d%d",&x,&y,&val);
+            a[x][y]=a[y][x]=val;
+        }
+        dj(2);
+        //5.到各个点的最短路径存在lowcost中
+        for(int i=1;i<=n;i++)
+            printf("%d \n",lowcost[i]);
+    }
+    return 0;
+}
+
+ 
+ /***********线段树**************/
+#include<bits/stdc++.h>
+
+using namespace std;
+int n, m, x, y,ans, p;
+const int maxn = 1e5;
+struct node
+{
+    int l, r, w;
+}a[4*maxn+10];
+
+void build(int l, int r, int k)///建树
+{
+    a[k].l = l, a[k].r = r;
+    if(l==r)
+    {
+        scanf("%d",&a[k].w);
+        return ;
+    }
+    int m = (l+r) / 2;
+    build(l,m,k*2);
+    build(m+1,r,k*2+1);
+    a[k].w = a[k*2].w + a[k*2+1].w;
+}
+
+void add(int k)///单点修改
+{
+    if(a[k].l==a[k].r)
+    {
+        a[k].w+=y;
+        return ;
+    }
+    int m = (a[k].l+a[k].r) / 2;
+    if(x<=m) add(k*2);
+    else add(k*2+1);
+    a[k].w = a[k*2].w+a[k*2+1].w;
+}
+
+void sum(int k)///区间求和
+{
+    if(a[k].l>=x&&a[k].r<=y)
+    {
+        ans+=a[k].w;
+        return ;
+    }
+    int m = (a[k].l+a[k].r) / 2;
+    if(x<=m) sum(k*2);
+    if(y>m) sum(k*2+1);
+}
+
+int main()
+{
+    cin>>n;
+    build(1,n,1);
+    cin>>m;
+    for(int i = 1; i <= m; i++)
+    {
+        cin>>p>>x>>y;
+        ans = 0;
+        if(p==1) add(1);
+        else
+        {
+            sum(1);
+            cout<<ans<<endl;
+        }
+    }
+    return 0;
+}
+/***************KMP*********************/
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn = 105;
+char str[maxn], ptr[maxn];
+int next[maxn];
+void get_next(){
+    int n = strlen(ptr), k = 0;
+    memset(next, 0, sizeof(next));
+    for(int i = 1; i < n; i++){
+        while(k > 0 && ptr[k]!=ptr[i]) k = next[k];
+        if(ptr[i]==ptr[k]) k++;
+        next[i+1] = k;
+    }
+}
+
+int kmp(char *a, char *b){
+    int i = 0, j = 0;
+    int len1 = strlen(a);
+    int len2 = strlen(b);
+    get_next();
+    while(i<len1&&j<len2){
+        if(j==0||a[i]==b[j]) i++, j++;
+        else j = next[j+1];
+    }
+    if(j >= len2) return i - j;
+    else return -1;
+}
+int main(){
+    while(scanf("%s %s", str, ptr)){
+        int ans = kmp(str, ptr);
+        if(ans>=0) cout<<kmp(str,ptr)<<endl;
+        else cout<<"-1"<<endl;
+    }
+    return 0;
+}
+///KMP模板
+
+/************化分数—区间第K值**********/
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 1e5 + 10;
+int n, m;
+int a[maxn];
+struct node
+{
+    int num[maxn];
+    int cnt[maxn];
+}tree[40];
+
+void build(int l, int r, int c){
+    if(l == r) return;
+    int mid = (l + r) >> 1;
+    int opleft = l, opright = mid + 1;
+    int same = 0;
+    for(int i = mid; i > 0; i--){
+        if(a[i] == a[mid]) same++;
+        else break;
+    }
+    int Cleft = 0;
+    for(int i = l; i <= r; i++){
+        if(tree[c].num[i] < a[mid]){
+            tree[c+1].num[opleft++] = tree[c].num[i];
+            Cleft++;
+            tree[c].cnt[i] = Cleft;
+        }
+        else if(tree[c].num[i] < a[mid] && same){
+            tree[c+1].num[opleft++] = tree[c].num[i];
+            Cleft++;
+            tree[c].cnt[i] = Cleft;
+            same--;
+        }
+        else{
+            tree[c].cnt[i] = Cleft;
+            tree[c+1].num[opright++] = tree[c].num[i];
+        }
+    }
+    build(l, mid, c+1);
+    build(mid+1, r, c+1);
+}
+
+int query(int l, int r, int c, int ql, int qr, int k){
+    if(l == r) return tree[c].num[l];
+    int mid = (l + r) >> 1;
+    int Sleft, left;
+    if(ql == l){
+        Sleft = tree[c].cnt[qr];
+        left = 0;
+    }
+    else{
+        Sleft = tree[c].cnt[qr] - tree[c].cnt[ql - 1];
+        left = tree[c].cnt[ql - 1];
+    }
+    if(Sleft >= k){
+        int ls = l + left;
+        int rs = ls + Sleft - 1;
+        query(l, mid, c + 1, ls, rs, k);
+    }
+    else{
+        int a = ql - l - left;
+        int b = qr - ql + 1 - Sleft;
+        int ls = mid + a + 1;
+        int rs = mid + a + b;
+        query(mid + 1, r, c + 1, ls, rs, k - Sleft);
+    }
+}
+
+int main(){
+    cin>>n>>m;
+    for(int i = 1; i <= n; i++){
+        cin>>tree[0].num[i];
+        a[i] = tree[0].num[i];
+    }
+    sort(a + 1, a + n + 1);
+    build(1, n, 0);
+    while(m--){
+        int l, r, k;
+        cin>>l>>r>>k;
+        cout<<query(1, n, 0, l, r, k)<<endl;
+    }
+    return 0;
+}
+/*******快速幂+快速乘法取模******/
+//快速乘法
+long long quick_mul(long long a , long long b , long long m)
+{
+    long long ans = 0 ;
+    while (b)
+    {
+        if (b & 1)
+            ans = (ans + a) % m ;
+        a = (a + a) % m ;
+        b >>= 1 ;
+    }
+    return ans ;
+}
+//快速幂
+long long quick_pow(long long a , long long b , long long m)
+{
+    long long ans = 1 ;
+    while (b)
+    {
+        if (b & 1)
+            ans = quick_mul(ans , a , m);
+        a = quick_mul(a , a , m) ;
+        b >>= 1 ;
+    }
+    return ans ;
+}
+
+/*************BFS*****************/
+#include<iostream>
+#include<algorithm>
+#include<cstdio>
+#include<queue>
+#include<cstring>
+
+using namespace std;
+const int maxn = 1100;
+char mpt[maxn][maxn];
+int vis[maxn][maxn], sx, sy, n ,m;
+int dx[4] = {1, 0, -1, 0}, dy[4] = {0, 1, 0, -1};
+int flag = 0;
+struct node
+{
+    int x, y;
+};
+
+void bfs()
+{
+    queue<node> q;
+    node a;
+    a.x = sx, a.y = sy;
+    q.push(a);
+    vis[a.x][a.y] = 1;
+    while(!q.empty())
+    {
+        node now = q.front();
+        q.pop();
+         if (mpt[now.x][now.y]=='E')
+         {
+             flag = 1;
+         }
+        for (int i = 0; i < 4; i++)
+        {
+            node New;
+            New.x = now.x + dx[i];
+            New.y = now.y + dy[i];
+            if(0<=New.x&&New.x<n &&0<=New.y&&New.y<m &&!vis[New.x][New.y]&&mpt[New.x][New.y]!='#'&&mpt[New.x][New.y]!='F')
+            {
+                q.push(New);
+                vis[New.x][New.y] = 1;
+            }
+        }
+    }
+}
+
+int main()
+{
+    while (cin>>n>>m)
+    {
+        memset(vis, 0, sizeof(vis));
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                cin>>mpt[i][j];
+                if (mpt[i][j]=='S')
+                    sx = i, sy = j;
+            }
+        }
+        bfs();
+        if(flag)
+            cout<<"PIG PIG PIG!"<<endl;
+        else
+            cout<<"A! WO SI LA!"<<endl;
+    }
+    return 0;
+}
+
+/*************STL操作*************/
+map:
+begin() 返回指向map头部的迭代器
+clear(） 删除所有元素
+count() 返回指定元素出现的次数
+empty() 如果map为空则返回true
+end() 返回指向map末尾的迭代器
+equal_range() 返回特殊条目的迭代器对
+erase() 删除一个元素
+find() 查找一个元素
+get_allocator() 返回map的配置器
+insert() 插入元素
+key_comp() 返回比较元素key的函数
+lower_bound() 返回键值>=给定元素的第一个位置
+max_size() 返回可以容纳的最大元素个数
+rbegin() 返回一个指向map尾部的逆向迭代器
+rend() 返回一个指向map头部的逆向迭代器
+size() 返回map中元素的个数
+swap() 交换两个map
+upper_bound() 返回键值>给定元素的第一个位置
+value_comp() 返回比较元素value的函数
+
+string:
+swap() //交换两个字符串的内容 
+append(),push_back() //在尾部添加字符 
+insert() //插入字符 
+erase() //删除字符 
+clear() //删除全部字符 
+replace() //替换字符 
+size(),length() //返回字符数量 
+max_size() //返回字符的可能最大个数 
+empty() //判断字符串是否为空 
+copy() //将某值赋值为一个C_string 
+c_str() //将内容以C_string返回 
+substr() //返回某个子字符串 
+begin() end() //提供类似STL的迭代器支持 
+find(a.begin(),a.end(),1);//从a的头开始一直到尾，找到第一个值为1的元素
+
+vector：
+push_back()//尾部添加成员
+insert()//插入成员  vec1.insert(vec1.begin()+1, 5);
+pop_back()//弹出最后一个成员
+erase()//删除成员 vec1.erase(vec1.begin()+1, vec1.end()-2);
+size()//返回容器大小
+empty()//判断容器是否为空
+
+stack：先进后出
+empty() 堆栈为空则返回真
+pop() 移除栈顶元素
+push() 在栈顶增加元素
+size() 返回栈中元素数目
+top() 返回栈顶元素
+
+queue:
+back()返回最后一个元素
+empty()如果队列空则返回真
+front()返回第一个元素
+pop()删除第一个元素
+push()在末尾加入一个元素
+size()返回队列中元素的个数
+
+

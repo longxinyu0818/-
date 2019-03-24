@@ -1,0 +1,95 @@
+/**********PTA链表去重*************/
+/**********2019年3月24日09:36:02**********/
+         结构体模拟链表  res数组保存去重后的链表   ans数组保存被去重的链表
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 1e5 + 10;
+struct node
+{
+    int num, next;
+}a[maxn];
+bool vis[maxn];
+int res[maxn], ans[maxn];
+
+int main(){
+    int n, k, p;
+    cin>>n>>k;
+    for(int i = 0; i < k; i++){
+        cin>>p;
+        cin>>a[p].num>>a[p].next;
+    }
+    int cnt1 = 0, cnt2 = 0;
+    for(int i = 0; i < k && n != -1; i++){
+        if(!vis[abs(a[n].num)]){
+            res[cnt1++] = n;
+            vis[abs(a[n].num)] = 1;
+            n = a[n].next;
+        }
+        else{
+            ans[cnt2++] = n;
+            n = a[n].next;
+        }
+    }
+    if(cnt1){
+        for(int i = 0; i < cnt1; i++){
+            if(i == 0) printf("%05d %d",res[i], a[res[i]].num);
+            else printf(" %05d\n%05d %d", res[i], res[i], a[res[i]].num);
+        }
+        cout<<" "<<-1<<endl;
+    }
+    if(cnt2){
+        for(int i = 0; i < cnt2; i++){
+            if(i == 0) printf("%05d %d",ans[i], a[ans[i]].num);
+            else printf(" %05d\n%05d %d", ans[i], ans[i], a[ans[i]].num);
+        }
+        cout<<" "<<-1<<endl;
+    }
+    return 0;
+}
+/***************PT图着色问题***************/
+/***********2019年3月24日10:58:01************/
+  mp数组保存边的连通性， color数组保存每个节点的颜色，check函数判断两个点的颜色是否相同
+#include<cstdio>
+#include<algorithm>
+#include<map>
+#include<iostream>
+
+using namespace std;
+const int maxn = 505;
+int n, m, k, t;
+int mp[maxn][maxn], color[maxn];
+map<int, int> M;
+
+int check(){
+    for(int i = 1; i <= n; i++){
+        for(int j = 1; j <= n; j++){
+            if(mp[i][j] && color[i] == color[j])
+                return 0;
+        }
+    }
+    return 1;
+}
+
+int main(){
+    cin>>n>>m>>k;
+    for(int i = 1; i <= m; i++){
+        int l, r;
+        cin>>l>>r;
+        mp[l][r] = mp[r][l] = 1;
+    }
+    cin>>t;
+    while(t--){
+        M.clear();
+        int cnt = 0, flag = 0;
+        for(int i = 1; i <= n; i++){
+            cin>>color[i];
+            if(M[color[i]] == 0)
+                M[color[i]] = ++cnt;
+        }
+        if(cnt == k) flag = 1;
+        if(check() && flag) cout<<"Yes"<<endl;
+        else cout<<"No"<<endl;
+    }
+    return 0;
+}

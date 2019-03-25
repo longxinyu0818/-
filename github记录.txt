@@ -93,3 +93,96 @@ int main(){
     }
     return 0;
 }
+/************PTA凑零钱**************/
+/******2019年3月25日15:09:41******/
+一看题目以为是个背包问题，但是题目要求有多解时输出最小序列，dp好像不满足条件，于是开始暴力dfs
+提前判断所有的钱是不是够付钱的（剪枝），贴上代码
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 1e5 + 10;
+int a[maxn], ans[maxn];
+int n, m, sum, flag, len;
+void dfs(int num, int s, int now){
+    if(flag) return;
+    if(s > m) return;
+    if(s == m){
+        len = now;
+        flag = 1;
+        return ;
+    }
+    if(s + a[num] > m) return;
+    if(num >= n) return;
+    ans[now] = a[num];
+    dfs(num + 1, s + a[num], now + 1);
+    dfs(num + 1, s, now);
+}
+
+int main(){
+    cin>>n>>m;
+    for(int i = 0; i < n; i++) cin>>a[i], sum+=a[i];
+    if(sum < m) cout<<"No Solution"<<endl;
+    else{
+        sort(a, a + n);
+        dfs(0, 0, 0);
+        if(!flag) cout<<"No Solution"<<endl;
+        else{
+            cout<<ans[0];
+            for(int i = 1; i < len; i++) cout<<" "<<ans[i];
+            cout<<endl;
+        }
+    }
+    return 0;
+}
+/*************PTA特殊堆栈 **************/
+/******2019年3月25日16:14:56**********/
+一开始看错题意wa了一发,才发现取中值得时候要排序的后的中值。
+ok简简单单，直接暴力写，结果超时，然后搜题解才想起来原来
+stl真是个好东西！！！！！！！！！！！！！lower_bound真好用
+贴代码：
+#include<iostream>
+#include<algorithm>
+#include<cstdio>
+#include<vector>
+#include<stack>
+#include<string>
+
+using namespace std;
+stack<int> st;
+string s;
+vector<int> v;
+
+int main(){
+    int n, tmp;
+    cin>>n;
+    vector<int>::iterator it;
+    while(n--){
+        cin>>s;
+        if(s == "Pop"){
+            if(st.empty()) cout<<"Invalid"<<endl;
+            else{
+                int num = st.top();
+                cout<<num<<endl;
+                it = lower_bound(v.begin(), v.end(), num);
+                v.erase(it);
+                st.pop();
+            }
+        }
+        else if(s == "PeekMedian"){
+            if(st.empty()) cout<<"Invalid"<<endl;
+            else{
+                int len = v.size();
+                if(len == 1) cout<<v[0]<<endl;
+                else if(len%2 == 1) cout<<v[len/2]<<endl;
+                else if(len%2 == 0)cout<<v[len/2-1]<<endl;
+            }
+        }
+        else if(s == "Push"){
+            cin>>tmp;
+            st.push(tmp);
+            it = lower_bound(v.begin(), v.end(), tmp);
+            v.insert(it, tmp);
+        }
+    }
+    return 0;
+}

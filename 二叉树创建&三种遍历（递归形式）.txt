@@ -1,0 +1,59 @@
+/********2019年3月26日15:14:57********/  
+     '#'表示子树为空
+#include<bits/stdc++.h>
+
+using namespace std;
+struct node
+{
+    char date;
+    struct node *left;
+    struct node *right;
+};
+
+node*T;
+
+void CreateTree(node* &T){
+    char ch;
+    cin>>ch;
+    if(ch == '#') T = NULL;
+    else{
+        T = new node;
+        T->date = ch;
+        CreateTree(T->left);
+        CreateTree(T->right);
+    }
+}
+
+void Preoder(node* &T){
+    if(T){
+        cout<<T->date<<" ";
+        Preoder(T->left);
+        Preoder(T->right);
+    }
+}
+
+void Inorder(node* &T){
+    if(T){
+        Inorder(T->left);
+        cout<<T->date<<" ";
+        Inorder(T->right);
+    }
+}
+
+void Posorder(node* &T){
+    if(T){
+        Posorder(T->left);
+        Posorder(T->right);
+        cout<<T->date<<" ";
+    }
+}
+
+int main(){
+    CreateTree(T);
+    Preoder(T);///前序遍历
+    cout<<endl;
+    Inorder(T);///中序遍历
+    cout<<endl;
+    Posorder(T);///后序遍历
+    return 0;
+}

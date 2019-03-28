@@ -1,0 +1,54 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 25;
+int vis[maxn], mpt[maxn][maxn], ans[maxn];
+int n, flag = 0, top = 0;
+
+void dfs(int x){
+    ans[top++] = x;
+    if(top == n && mpt[x][1]){
+        flag = 1;
+        return ;
+    }
+    int i;
+    for(i = 1; i <= n; i++){
+        if(!vis[i]&&mpt[i][1]) break;
+    }
+    if(i > n) return;
+    for(i = 1; i <= n; i++){
+        if(!vis[i] && mpt[x][i]){
+            vis[i] = 1;
+            dfs(i);
+            if(flag) return;
+            top--;
+            vis[i] = 0;
+        }
+    }
+}
+
+int main(){
+    char ch;
+    cin>>n;
+    for(int i = 1; i <= n; i++){
+        for(int j = 1; j <= n; j++){
+            cin>>ch;
+            if(ch == 'W') mpt[i][j] = 1;
+            else if(ch == 'L') mpt[j][i] = 1;
+        }
+    }
+    vis[1] = 1;
+    dfs(1);
+    if(flag){
+        cout<<ans[0];
+        for(int i = 1; i < top; i++) cout<<" "<<ans[i];
+        cout<<endl;
+    }
+    else cout<<"No Solution"<<endl;
+    return 0;
+}
+/******2019年3月28日22:34:23********/
+/*思路：dfs，一开始看数据才20，直接暴力写然后超时
+          感觉暴力好像没有什么为题啊，看完题解发现需
+          要
+*/

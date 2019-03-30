@@ -1,0 +1,25 @@
+1. os.name——判断现在正在实用的平台，Windows 返回 ‘nt'; Linux 返回’posix'
+
+2. os.getcwd()——得到当前工作的目录。
+
+3. os.listdir()——指定所有目录下所有的文件和目录名
+
+4. os.remove()——删除指定文件
+
+5. os.rmdir()——删除指定目录
+
+6. os.mkdir()——创建目录
+
+　　注意：这样只能建立一层，要想递归建立可用：os.makedirs()
+
+7. os.path.isfile()——判断指定对象是否为文件。是返回True,否则False
+
+8. os.path.isdir()——判断指定对象是否为目录。是True,否则False。
+
+9. os.path.exists()——检验指定的对象是否存在。是True,否则False.
+
+10. os.path.split()——返回路径的目录和文件名。
+
+11. os.getcwd()——获得当前工作的目录（get current work dir)
+
+12. os.system()——执行shell命令。

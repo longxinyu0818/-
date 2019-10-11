@@ -1,0 +1,101 @@
+/*
+2017西安邀请赛H  贪心
+线段树维护区间最小值 +  区间修改
+*/
+
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn=100005;
+int tree[maxn*3];
+int lazy[maxn*3];
+int n,m;
+
+void build(int node=1, int l=1, int r=n)
+{
+    if(l==r)
+    {
+        scanf("%d",&tree[node]);
+        return;
+    }
+    int mid=(l+r)/2;
+    build(node<<1, l, mid);
+    build((node<<1)+1, mid+1, r);
+    tree[node]=min(tree[node<<1], tree[(node<<1)+1]);
+}
+
+void pushdown(int node)
+{
+    if(lazy[node])
+    {
+        lazy[node<<1]+=lazy[node];
+        lazy[(node<<1)+1]+=lazy[node];
+        tree[node<<1]+=lazy[node];
+        tree[(node<<1)+1]+=lazy[node];
+        lazy[node]=0;
+    }
+}
+
+int g_L,g_R,g_Add;
+void change(int node=1, int l=1, int r=n)
+{
+    if(g_L<=l && r<=g_R)
+    {
+        tree[node]-=g_Add;
+        lazy[node]-=g_Add;
+        return;
+    }
+    int mid=(l+r)/2;
+    int lc=node<<1;
+    int rc=(node<<1)+1;
+    pushdown(node);
+    if(g_L<=mid)
+        change(lc, l, mid);
+    if(g_R>mid)
+        change(rc, mid+1, r);
+    tree[node]=min(tree[lc],tree[rc]);
+}
+
+int query(int node=1, int l=1, int r=n)
+{
+    if(g_L<=l && r<=g_R)
+    {
+        return tree[node];
+    }
+    int mid=(l+r)/2;
+    int lc=node<<1;
+    int rc=(node<<1)+1;
+    pushdown(node);
+    int ans=1e9;
+    if(g_L<=mid)
+        ans=min(ans, query(lc, l, mid));
+    if(g_R>mid)
+        ans=min(ans, query(rc, mid+1, r));
+    return ans;
+}
+
+int main()
+{
+    int T;
+    scanf("%d",&T);
+    while(T--)
+    {
+        memset(lazy, 0, sizeof(lazy));
+        memset(tree, 0, sizeof(tree));
+        scanf("%d%d",&n,&m);
+        build();
+        int cnt = 0;
+        for(int i = 1; i + m - 1<= n; i++)
+        {
+            g_L = i, g_R = i + m - 1;
+            int tmp = query();
+            if(tmp <= 0) continue;
+            //cout<<i<<" "<<tmp<<endl;
+            cnt += tmp;
+            g_Add = tmp;
+            change();
+        }
+        printf("%d\n",cnt);
+    }
+    return 0;
+}

@@ -1,0 +1,38 @@
+#include<bits/stdc++.h>
+ 
+using namespace std;
+const int N=1e5+5;
+typedef long long ll;
+const int mod=1e9+7;
+const double PI=acos(-1.0);
+int main()
+{
+    int t,m;
+    double R,ans;
+    cin >>  t;
+    while(t--)
+    {
+        cin >> m >> R;
+        ans=2*PI*R;
+        while(m--)
+        {
+            int a,b,r;
+            cin >> a >> b >> r;
+            double d=sqrt(a*a+b*b);               
+            if(d<abs(R-r)||d>=R+r) continue;
+            if(fabs(d -abs(R - r)) <= 1e-9) ans+=PI*r*2;
+            else
+            {
+                double a1,a2;
+                a1=acos((r*r+d*d-R*R)/(r*2.0*d)); 
+                a2=acos((R*R+d*d-r*r)/(R*2.0*d));
+                ans+=a1*2*r-a2*2*R;
+            }
+        }
+        printf("%.8lf\n",ans);
+    }
+    return 0;
+}
+/*
+求两圆相交的弧长，解三角形即可
+*/

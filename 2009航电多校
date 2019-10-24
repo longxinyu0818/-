@@ -1,0 +1,46 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 1e5 + 10;
+int fa[maxn], d[maxn], r[maxn];
+
+int Find(int x){
+    if(x == fa[x]) return x;
+    int tmp = fa[x];
+    fa[x] = Find(tmp);
+    d[x] = d[x] + d[tmp];
+    return fa[x];
+}
+
+void join(int x, int y){
+    int fx = Find(x), fy = Find(y);
+    if(fx == fy) return;
+    fa[fx] = fy;
+    d[fx] = r[fy];
+    r[fy] += r[fx];
+    return;
+}
+
+int main(){
+    int n, m;
+    cin>>n;
+    for(int i = 0; i <= n; i++) fa[i] = i, d[i] = 0, r[i] = 1;
+    while(n--){
+        char c;
+        int a, b;
+        cin>>c;
+        if(c == 'M'){
+            cin>>a>>b;
+            join(a, b);
+        }
+        else{
+            cin>>a;
+            Find(a);
+            cout<<d[a]<<endl;
+        }
+    }
+    return 0;
+}
+/*
+带权并查集模板题
+*/

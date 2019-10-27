@@ -1,0 +1,53 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 1e5 + 10;
+int a[maxn];
+int n, m;
+
+int check(int n){
+    int cnt = 0;
+    for(int i = 2; i * i <= n; i++){
+        if(n % i == 0){
+            a[cnt++] = i;
+            while(n % i == 0) n /= i;
+        }
+    }
+    if(n > 1) a[cnt++] = n;
+    return cnt;
+}
+
+int solve(int n, int cnt){
+    int ans = 0;
+    for(int i = 1; i < (1 << cnt); i++){
+        int po = 0, num = 1;
+        for(int j = 0; j < cnt; j++){
+            if(i & (1 << j)){
+                po++;
+                num *= a[j];
+            }
+        }
+        if(po & 1) ans += n / num;
+        else ans -= n / num;
+    }
+    return n - ans;
+}
+
+int main(){
+    int T;
+    cin>>T;
+    while(T--){
+        cin>>n>>m;
+        long long ans = 0;
+        for(int i = 1; i <= n; i++){
+            int cnt = check(i);
+            ans += solve(m, cnt);
+        }
+        cout<<ans<<endl;
+    }
+    return 0;
+}
+/*
+质因子分解+容斥原理
+若坐标gcd（n,m）=1,则这个点可以看到，转换为枚举1-m之间，与1，2，3，。。。互质的数有多少个
+*/

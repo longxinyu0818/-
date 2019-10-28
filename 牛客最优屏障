@@ -1,0 +1,54 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 5e4 + 10;
+int a[maxn], v[maxn], vis[maxn];
+
+int main(){
+    int T, k = 1;
+    scanf("%d",&T);
+    while(T--){
+        memset(v, 0, sizeof(v));
+        memset(vis, 0, sizeof(vis));
+        int n;
+        scanf("%d",&n);
+        for(int i = 1; i <= n; i++) scanf("%d",&a[i]);
+        stack<int> st;
+        while(!st.empty()) st.pop();
+        for(int i = 1; i <= n; i++){
+            int tmp = 0;
+            vis[i] = vis[i - 1];
+            while(!st.empty() && st.top() < a[i]){
+                tmp++;
+                st.pop();
+            }
+            if(!st.empty()) vis[i] += tmp + 1;
+            else vis[i] += tmp;
+            st.push(a[i]);
+        }
+        while(!st.empty()) st.pop();
+        for(int i = n; i >= 1; i--){
+            int tmp = 0;
+            v[i] = v[i + 1];
+            while(!st.empty() && st.top() < a[i]){
+                tmp++;
+                st.pop();
+            }
+            if(!st.empty()) v[i] += tmp + 1;
+            else v[i] += tmp;
+            st.push(a[i]);
+        }
+        int ans = -1, id = 0;
+        for(int i = 1; i < n; i++){
+            if(v[1] - (vis[i] + v[i + 1]) > ans){
+                ans = vis[n] - (vis[i] + v[i + 1]);
+                id = i;
+            }
+        }
+        printf("Case #%d: %d %d\n",k++, id + 1, ans);
+    }
+    return 0;
+}
+/*
+单调栈维护前缀和与后缀和
+*/

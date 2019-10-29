@@ -1,0 +1,48 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+const int maxn = 1e5 + 10;
+ll a[maxn], b[maxn];
+ll n, m, k;
+
+bool check(ll mid){
+    ll l = 1, r = 0, num = 0, ans = 0;
+    while(r <= n){
+        if(num < k){
+            if(a[r + 1] >= mid) num++;
+            r++;
+        }
+        else{
+            if(num == k) ans += (n - r + 1);
+            if(a[l] >= mid) num--;
+            l++;
+            if(ans >= m) return true;
+        }
+    }
+    return false;
+}
+
+int main(){
+    int T;
+    cin>>T;
+    while(T--){
+        cin>>n>>k>>m;
+        for(int i = 1; i <=  n; i++) cin>>a[i], b[i] = a[i];
+        ll l = 1, r = n, ans = 0;
+        sort(b + 1, b + 1 + n);
+        while(l <= r){
+            int mid = (l + r) >> 1;
+            if(check(b[mid])){
+                ans = b[mid];
+                l = mid + 1;
+            }
+            else r = mid - 1;
+        }
+        cout<<ans<<endl;
+    }
+    return 0;
+}
+/*
+二分答案，尺取法判断答案是否合法
+*/

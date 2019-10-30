@@ -1,0 +1,28 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+priority_queue<int> a, b;
+
+int main(){
+    int n, l, w;
+    cin>>n>>l>>w;
+    for(int i = 1; i <= n; i++){
+        int x, y;
+        cin>>x>>y;
+        if(y == 1) a.push(-x);
+        else b.push(-x-l);
+    }
+    ll ans = 0;
+    while(a.size()){
+        auto it = -a.top(); a.pop();
+        while(b.size() && -b.top() <= it) b.pop();
+        while(b.size() && abs(it - b.top())/(-b.top()-it) >= w) b.pop();
+        ans += b.size();
+    }
+    cout<<ans<<endl;
+    return 0;
+}
+/*
+假定风不影响云的速度而时月亮在动，则满足X2+L-X1>|X1+X2+L|/w的两朵云会在月亮相遇
+*/

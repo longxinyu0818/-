@@ -1,0 +1,48 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 500 + 10;
+int ruDeg[maxn], inDeg[maxn];
+vector<int> vec[maxn];
+queue<int> q;
+int n, m;
+
+bool topsort(){
+    while(!q.empty()) q.pop();
+    for(int i = 1; i <= n; i++) if(inDeg[i] == 0) q.push(i);
+    int num = 0;
+    while(!q.empty()){
+        int now = q.front();
+        q.pop();
+        ++num;
+        for(int i = 0; i < vec[now].size(); i++){
+            if(--inDeg[vec[now][i]] == 0) q.push(vec[now][i]);
+        }
+    }
+    if(num == n) return true;
+    else return false;
+}
+
+int main(){
+    cin>>n>>m;
+    int u, v;
+    for(int i = 1; i <= m; i++){
+        cin>>u>>v;
+        vec[u].push_back(v);
+        ruDeg[v]++;
+        inDeg[v]++;
+    }
+    int flag = 0;
+    for(int i = 1; i <= n; i++){
+        memcpy(inDeg, ruDeg, sizeof(inDeg));
+        --inDeg[i];
+        if(topsort()) {flag = 1; break;}
+    }
+    if(flag) puts("YES");
+    else puts("NO");
+    return 0;
+}
+
+/*
+拓扑排序，枚举每一个点减少一个入度，看是否能构成有向无环图
+*/

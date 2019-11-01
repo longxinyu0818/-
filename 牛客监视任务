@@ -1,0 +1,79 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 1e6 + 10;
+int n, m, cnt;
+struct node
+{
+    int l, r, w;
+    bool operator < (const node & b) const {
+        return r < b.r;
+    }
+}a[maxn];
+struct Tree
+{
+    int l, r, f, ans, len;
+}tree[maxn<<2];
+
+void build(int l, int r, int k){
+    tree[k].l = l, tree[k].r = r;
+    tree[k].len = r - l + 1;
+    if(l == r) return;
+    int mid = (l + r) >> 1;
+    build(l, mid, k << 1);
+    build(mid + 1, r, k << 1 | 1);
+}
+
+void pushdown(int k){
+    tree[k << 1].f = tree[k << 1 | 1].f = 1;
+    tree[k << 1].ans = tree[k << 1].len;
+    tree[k << 1 | 1].ans = tree[k << 1 | 1].len;
+    tree[k].f = 0;
+}
+
+void update(int l, int r, int k){
+    if(cnt == 0) return;
+    if(l <= tree[k].l && tree[k].r <= r && tree[k].len <= cnt){
+        int tmp = tree[k].len - tree[k].ans;
+        cnt -= tmp;
+        tree[k].ans = tree[k].len;
+        tree[k].f = 1;
+        return;
+    }
+    if(tree[k].f) pushdown(k);
+    int mid = (tree[k].l + tree[k].r) >> 1;
+    if(r > mid) update(l, r, k << 1 | 1);
+    if(l <= mid) update(l, r, k << 1);
+    tree[k].ans = tree[k << 1].ans + tree[k << 1 | 1].ans;
+}
+
+int query(int l, int r, int k){
+    if(l <= tree[k].l && tree[k].r <= r) return tree[k].ans;
+    int mid = (tree[k].l + tree[k].r) >> 1;
+    if(tree[k].f) pushdown(k);
+    int ans = 0, res = 0;
+    if(l <= mid) ans = query(l , r , k << 1);
+    if(r > mid) res = query(l , r , k << 1 | 1);
+    return ans + res;
+}
+
+int main(){
+    cin>>n>>m;
+    build(1, n, 1);
+    for(int i = 1; i <= m; i++) scanf("%d %d %d",&a[i].l, &a[i].r, &a[i].w);
+    sort(a + 1, a + 1 + m);
+    for(int i = 1; i <= m; i++){
+        int l = a[i].l, r = a[i].r, w = a[i].w;
+        int ans = query(l, r, 1);
+        if(ans < w){
+            cnt = w - ans;
+            update(l, r, 1);
+        }
+    }
+    cout<<query(1, n, 1)<<endl;
+    return 0;
+}
+/*
+贪心+线段段树
+把r按从小到大排序，从右边开始跟新每个点填一个1
+*/

@@ -1,0 +1,61 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 3e4 + 10;
+int inDeg[maxn];
+vector<int> vec[maxn];
+priority_queue<int> q;
+//priority_queue<int,vector<int>,less<int> > q;
+int n, m, cnt, len;
+int ans[maxn];
+
+void topsort(){
+    cnt = 1;
+    len = n;
+    while(!q.empty()) q.pop();
+    for(int i = 1; i <= n; i++) if(inDeg[i] == 0) q.push(i);
+    while(!q.empty()){
+        int now = q.top();
+        q.pop();
+        ans[len--] = now;
+        for(int i = 0; i < vec[now].size(); i++){
+            if(--inDeg[vec[now][i]] == 0) q.push(vec[now][i]);
+        }
+    }
+}
+int main(){
+    int T;
+    cin>>T;
+    while(T--){
+        scanf("%d%d",&n,&m);
+        for(int i = 1; i <= n; i++) vec[i].clear(), inDeg[i] = 0;
+        for(int i = 1; i <= m; i++){
+            int u, v;
+            scanf("%d%d",&u,&v);
+            vec[v].push_back(u);
+            inDeg[u]++;
+        }
+        topsort();
+        for(int i = 1; i < n; i++) cout<<ans[i]<<" ";
+        cout<<ans[n]<<endl;
+    }
+    return 0;
+}
+/*
+反向建图+优先队列，逆序输出答案既可
+此题并不是字典序最小，而是要求小的尽量在前面
+特殊样例：
+1
+10 9
+6 4
+4 1
+3 9
+9 2
+5 7
+7 8
+1 10
+2 10
+8 10
+字典序最小输出：3 5 6 4 1 7 8 9 2 10
+正确答案：6 4 1 3 9 2 5 7 8 10
+*/

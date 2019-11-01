@@ -1,0 +1,48 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 500 + 10;
+int inDeg[maxn];
+vector<int> vec[maxn];
+priority_queue<int,vector<int>,greater<int> > q;
+int n, m, cnt, len;
+struct node
+{
+    int id, num;
+    bool operator < (const node & b)const{
+        if(id == b.id)  return num < b.num;
+        return id < b.id;
+    }
+}a[maxn];
+
+void topsort(){
+    cnt = 1;
+    while(!q.empty()) q.pop();
+    for(int i = 1; i <= n; i++) if(inDeg[i] == 0) q.push(i);
+    while(!q.empty()){
+        int now = q.top();
+        q.pop();
+        if(cnt != n) cout<<now<<" ", cnt++;
+        else cout<<now<<endl;
+        for(int i = 0; i < vec[now].size(); i++){
+            if(--inDeg[vec[now][i]] == 0) q.push(vec[now][i]);
+        }
+    }
+}
+int main(){
+    while(cin>>n>>m){
+        for(int i = 1; i <= n; i++) vec[i].clear();
+        memset(inDeg, 0, sizeof(inDeg));
+        for(int i = 1; i <= m; i++){
+            int u, v;
+            cin>>u>>v;
+            vec[u].push_back(v);
+            inDeg[v]++;
+        }
+        topsort();
+    }
+    return 0;
+}
+/*
+拓扑排序+优先队列
+*/

@@ -1,0 +1,60 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 1e5 + 10;
+const int mod = 1e9 + 7;
+int a[maxn], C[35][maxn], p[maxn];
+int n, m;
+
+int lowbit(int x){
+    return x & -x;
+}
+
+int sum(int k, int x){
+    int res = 0;
+    while(x > 0){
+        res += C[k][x];
+        x -= lowbit(x);
+    }
+    return res;
+}
+
+void add(int k, int x, int num){
+    while(x <= n){
+        C[k][x] += num;
+        x += lowbit(x);
+    }
+}
+
+int main(){
+    scanf("%d",&n);
+    p[0] = 1;
+    for(int i = 1; i <= n; i++) p[i] = 1ll*2*p[i-1] % mod;
+    for(int i = 1; i <= n; i++){
+        scanf("%d",&a[i]);
+        for(int j = 0; j <= 30; j++) if(a[i] & (1 << j)) add(j, i, 1);
+    }
+    scanf("%d",&m);
+    while(m--){
+        int op, x, y;
+        scanf("%d%d%d",&op,&x,&y);
+        if(op == 1){
+            for(int i = 0; i <= 30; i++) if(a[x] & (1 << i)) add(i, x, -1);
+            a[x] = y;
+            for(int i = 0; i <= 30; i++) if(a[x] & (1 << i)) add(i, x, 1);
+        }
+        else{
+            int ans = 0;
+            for(int i = 0; i <= 30; i++){
+                int cnt = sum(i, y) - sum(i, x - 1);
+                ans = (ans + 1ll*(p[cnt]-1)*p[i]%mod)%mod;
+            }
+            printf("%d\n",ans);
+        }
+    }
+    return 0;
+}
+/*
+数组数组+二进制拆分
+思路：假设[l, r]第k位的和为p, 贡献为 (2^p-1)*2^k（减一是除去0这种情况）
+*/

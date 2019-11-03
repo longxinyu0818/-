@@ -1,0 +1,51 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+const int maxn = 1e6 + 10;
+ll a[maxn], c[maxn];
+int n;
+vector<int> v;
+
+int getid(int x){
+    return lower_bound(v.begin(), v.end(), x) - v.begin() + 1;
+}
+
+void add(int x, int num){
+    while(x <= n) c[x] += num, x += x & -x;
+}
+
+ll sum(int x){
+    ll res = 0;
+    while(x) res += c[x], x -= x & -x;
+    return  res;
+}
+
+int main(){
+    cin>>n;
+    for(int i = 1; i <= n; i++){
+        cin>>a[i];
+        v.push_back(a[i]);
+    }
+    sort(v.begin(), v.end());
+    v.erase(unique(v.begin(), v.end()), v.end());
+    ll res = 0, ans = 0, tmp = 1e18;
+    for(int i = 1; i <= n; i++){
+        int pos = getid(a[i]);
+        ans += (sum(n) - sum(pos)) * (n - i + 1);
+        if(ans > tmp){
+            res += ans / tmp;
+            ans %= tmp;
+        }
+        add(pos, i);
+    }
+    if(res) printf("%lld%018lld\n",res,ans);
+    else printf("%lld\n",ans);
+    return 0;
+}
+/*
+考虑每个数对答案的贡献如果有 i < j 且 a[i] > a[j]
+那么区间1<= l <=i, j <= r <= n, 就是包含了这个逆
+序对, 也就是有i*(n-j+1)个区间
+离散化处理即可
+*/

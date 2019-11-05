@@ -1,0 +1,39 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+const int maxn = 1e6 + 10;
+int sum[maxn], lft[maxn], pre[maxn], ans[maxn], a[maxn];
+
+inline _max(int a, int b){return a > b ? a : b;}
+
+int main(){
+    int n, m;
+    while(~scanf("%d%d",&n,&m)){
+        for(int i = 1; i <= n; i++) pre[i] = sum[i] = lft[i] = 0;
+        for(int i = 1; i <= n; i++){
+            scanf("%d",&a[i]);
+            lft[i] = pre[a[i]];
+            pre[a[i]] = i;
+            sum[i] = sum[i - 1] + a[i];
+        }
+        int pos = 0;
+        for(int i = 1; i <= n; i++){
+            if(lft[i] > 0) pos = _max(pos, lft[i]);
+            ans[i] = pos;
+        }
+        while(m--){
+            int l, r;
+            scanf("%d%d",&l,&r);
+            int len = r - l + 1;
+            if(ans[r] >= l) puts("NO");
+            else{
+                int num = sum[r] - sum[l - 1];
+                if(num == len*(len+1) / 2) puts("YES");
+                else puts("NO");
+            }
+        }
+    }
+    return 0;
+}
+//维护一个前缀和以及判断区间是否有相同的数即可，时间复制度为o(n)

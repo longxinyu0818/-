@@ -1,0 +1,35 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 1e5 + 10;
+int a[maxn];
+
+int main(){
+    int T;
+    cin>>T;
+    while(T--){
+        int n, p;
+        cin>>n>>p;
+        for(int i = 1; i <= n; i++) cin>>a[i], a[i] %= p;
+        sort(a + 1, a + 1 + n);
+        int ans = 0;
+        for(int i = 1; i <= n; i++){
+            int tmp = p - a[i] - 1;
+            int l = 1, r = n, pos = -1;
+            while(l <= r){
+                int mid = (l + r) >> 1;
+                if(a[mid] <= tmp) pos = mid, l = mid + 1;
+                else r = mid - 1;
+            }
+            if(pos != -1 && pos > i) ans = max(ans, a[i] + a[pos]);
+            if(n > i) ans = max(ans, (a[i] + a[n]) % p);
+        }
+        cout<<ans<<endl;
+    }
+    return 0;
+}
+/*
+先将每个数对p取模，然后排序。枚举第i个数字必选，
+然后可以去二分最大的和不超过p的那个数字，以及
+最大的那个数字。取最大值即可。
+*/

@@ -1,0 +1,48 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+const int maxn = 1000000 ;
+ll prime[maxn + 1] ;
+
+void getPrime(){
+    memset (prime , 0 , sizeof (prime)) ;
+    for (ll i = 2 ; i <= maxn ; ++i){
+        if (!prime[i]) prime[++prime[0]] = i ;
+        for (ll j = 1 ; j <= prime[0] && prime[j] <= maxn / i ; ++j){
+            prime[prime[j] * i] = 1 ;
+            if (i % prime[j] == 0) break ;
+        }
+    }
+}
+
+long long ans[100][2] ;
+ll cnt ;
+
+ll solve(long long x){
+    cnt = 0 ;
+    long long tmp = x ;
+    for (ll i = 1 ; prime[i] <= tmp / prime[i] ; ++i){
+        ans[cnt][1] = 0 ;
+        if (tmp % prime[i] == 0){
+            ans[cnt][0] = prime[i] ;
+            while (tmp % prime[i] == 0){ans[cnt][1]++ ;tmp /= prime[i] ;}
+            cnt++ ;
+        }
+    }
+    if (tmp != 1){ans[cnt][0] = tmp ;ans[cnt++][1] = 1 ;}
+    return cnt ;
+}
+
+int main (){
+    getPrime() ;
+    long long n;
+    cin>>n;
+    long long tmp = solve(n) ;
+    if (tmp == 0) cout<<n<<endl;
+    else if (tmp == 1) cout<<ans[0][0]<<endl;
+    else cout<<1<<endl;
+    return 0;
+}
+
+//合数分解

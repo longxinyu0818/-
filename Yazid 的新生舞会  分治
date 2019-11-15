@@ -1,0 +1,57 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+const int maxn = 5e5 + 10;
+int flag[maxn], sum[maxn*2], a[maxn], num[maxn], cnt[maxn];
+int n, type, t;
+ll ans;
+
+void solve(int l, int r){
+    if(l == r){
+        ans++;
+        return;
+    }
+    int mid = (l + r) >> 1;
+    solve(l, mid);
+    solve(mid + 1, r);
+    t = 0;
+    for(int i = mid; i >= l; i--){
+        cnt[a[i]]++;
+        if(cnt[a[i]] > (mid - i + 1) / 2 && !flag[a[i]]) flag[a[i]] = 1, num[++t] = a[i];
+    }
+    for(int i = mid; i >= l; i--) cnt[a[i]] = 0;
+    for(int i = mid; i <= r; i++){
+        cnt[a[i]]++;
+        if(cnt[a[i]] > (i - mid) / 2 && !flag[a[i]]) flag[a[i]] = 1, num[++t] = a[i];
+    }
+    for(int i = l; i <= r; i++) cnt[a[i]] = 0, flag[a[i]] = 0;
+    int tmp, s;
+    for(int i = 1; i <= t; i++){
+        tmp = num[i];
+        s = 0;
+        sum[n]++;
+        for(int j = l; j < mid; j++){
+            s += (a[j] == tmp ? 1 : -1);
+            sum[s + n]++;
+        }
+        s += a[mid] == tmp ? 1 : -1;
+        for(int j = -(r - l + 1); j <= r - l + 1; j++) sum[j + n] += sum[j + n - 1];
+        for(int j = mid + 1; j <= r; j++){
+            s += (a[j] == tmp ? 1 : -1);
+            ans += sum[s + n - 1];
+        }
+        for(int j = -(r - l + 1); j <= r - l + 1; j++) sum[j + n] = 0;
+    }
+}
+
+int main(){
+    scanf("%d%d",&n,&type);
+    for(int i = 1; i <= n; i++) scanf("%d",&a[i]);
+    solve(1, n);
+    printf("%lld\n",ans);
+    return 0;
+}
+///设当前处理到区间 [l,r][l,r][l,r]。对于当前区间，我们只需要统计有多少个满足要求的横跨 midmidmid 位置的子区间.
+///不横跨 midmidmid 位置的子区间的统计二分下去做。
+————————————————

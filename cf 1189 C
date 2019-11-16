@@ -1,0 +1,21 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 1e5 + 10;
+int a[maxn], sum[maxn];
+
+int main(){
+    int n;
+    cin>>n;
+    for(int i = 1; i <= n; i++) scanf("%d",&a[i]), sum[i] = sum[i - 1] + a[i];
+    int q;
+    cin>>q;
+    while(q--){
+        int l, r;
+        scanf("%d%d",&l, &r);
+        int ans = sum[r] - sum[l - 1];
+        cout<<ans/10<<endl;
+    }
+    return 0;
+}
+///处理出前缀和即可

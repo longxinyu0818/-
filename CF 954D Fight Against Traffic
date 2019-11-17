@@ -1,0 +1,52 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 1e3 + 10;
+int ds[maxn], dt[maxn];
+vector<int> v[maxn];
+
+void bfs(int u, int *d){
+    for(int i = 1; i <= maxn; i++) d[i] = 100000000;
+    queue<int> q;
+    q.push(u);
+    d[u] = 0;
+    while(!q.empty()){
+        int vv = q.front();
+        q.pop();
+        for(auto &it : v[vv]){
+            if(d[it] > d[vv] + 1){
+                d[it] = d[vv] + 1;
+                q.push(it);
+            }
+        }
+    }
+}
+
+int main(){
+    int n, m, s, t;
+    cin>>n>>m>>s>>t;
+    for(int i = 1; i <= m; i++){
+        int x, y;
+        cin>>x>>y;
+        v[x].push_back(y);
+        v[y].push_back(x);
+    }
+    bfs(s, ds);
+    bfs(t, dt);
+    int cnt = 0;
+    int dis = ds[t];
+    for(int i = 1; i <= n; i++){
+        for(int j = i + 1; j <= n; j++){
+            if(ds[i] + dt[j] + 1 >= dis && ds[j] + dt[i] + 1 >= dis) cnt++;
+        }
+    }
+    cout<<cnt - m<<endl;
+    return 0;
+}
+/*
+因为图的大小为1e3，所以我们暴力的判断每条边即可，我们先预处理出来s和t点到其他个点的最短路径，然后判的时候只需保证以下：
+我们假设当前枚举增加i节点和j节点之间的边
+只要满足s -> i + i -> j + j -> t >= s -> t即可 （箭头表示边）
+还得满足s -> j + j -> i + i -> t >= s -> t
+*/
+

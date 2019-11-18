@@ -1,0 +1,32 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+const int maxn = 2e5 + 10;
+ll sum[maxn], len[maxn];
+struct node
+{
+    int l, r;
+}a[maxn];
+
+int main(){
+    int n, h;
+    cin>>n>>h;
+    for(int i = 1;  i<= n; i++){
+        cin>>a[i].l>>a[i].r;
+        if(i > 1){
+            sum[i] = sum[i - 1] + a[i].l - a[i - 1].r;
+        }
+        len[i] = len[i - 1] + a[i].r - a[i].l;
+    }
+    ll ans = 0;
+    for(int i = 1; i <= n; i++){
+        int pos = lower_bound(sum + i, sum + 1 + n, sum[i] + h) - sum;
+        pos--;
+        ll tmp = len[pos] - len[i - 1] + h;
+        ans = max(tmp, ans);
+    }
+    cout<<ans<<endl;
+    return 0;
+}
+///处理前缀和二分即可

@@ -1,0 +1,25 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+ll num[2][(1<<20)+5];
+ll pre[(1<<20)+5];
+
+int main(){
+    ll ans = 0;
+    int n;
+    cin>>n;
+    num[0][0] = 1;
+    for(int i = 1; i <= n; i++){
+        int tmp;
+        cin>>tmp;
+        pre[i] = pre[i - 1] ^ tmp;
+        ans += num[i%2][pre[i]];
+        num[i%2][pre[i]]++;
+    }
+    cout<<ans<<endl;
+    return 0;
+}
+/*
+考虑异或连续可以用前缀和处理，已经任异或的性质，有pre[l-1] = pre[r], 判断奇偶统计即可
+*/

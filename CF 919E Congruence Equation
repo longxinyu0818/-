@@ -1,0 +1,30 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+ll a, b, x, p;
+
+ll qpow(ll a, ll b, ll mod){
+    ll res = 1;
+    while(b){
+        if(b & 1) res = res * a % mod;
+        b >>= 1;
+        a = a * a % mod;
+    }
+    return res % mod;
+}
+
+int main(){
+    cin>>a>>b>>p>>x;
+    ll tmp = a, ans = 0;
+    for(ll i = 1; i < p; i++,tmp = tmp * a % p){
+        ll inv = b*qpow(tmp, p - 2, p) % p;
+        ll k = (i - inv + p) % p;
+        ll minn = i + k * (p - 1);
+        if(minn > x) continue;
+        ans += max(0ll, (x - minn) / (p*(p - 1)) + 1);
+    }
+    cout<<ans<<endl;
+    return 0;
+}
+///最小循环节为p*（p - 1），1到p内枚举n即可

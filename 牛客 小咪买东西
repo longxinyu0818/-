@@ -1,0 +1,46 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+const int maxn = 1e4 + 10;
+struct node
+{
+    int cost,val;
+}a[maxn];
+ll arr[maxn];
+int n, k;
+
+bool cmp(int a, int b){
+    return a > b;
+}
+
+bool check(int num){
+    for(int i = 1; i <= n; i++) arr[i] = a[i].val - num * a[i].cost;
+    sort(arr + 1, arr + 1 + n, cmp);
+    ll sum = 0;
+    for(int i = 1; i <= k; i++) sum += arr[i];
+    return sum >= 0;
+}
+
+int main(){
+    int T;
+    cin>>T;
+    while(T--){
+        memset(a, 0, sizeof(a));
+        memset(arr, 0, sizeof(arr));
+        cin>>n>>k;
+        for(int i = 1; i <= n; i++) cin>>a[i].cost>>a[i].val;
+        int l = 0, r = maxn, ans = 0;
+        while(l <= r){
+            int mid = (l + r) >> 1;
+            if(check(mid)){
+                ans = mid;
+                l = mid + 1;
+            }
+            else r = mid - 1;
+        }
+        cout<<ans<<endl;
+    }
+    return 0;
+}
+/// 牛客 14662  二分max 取前k个检查max是否满足条件
